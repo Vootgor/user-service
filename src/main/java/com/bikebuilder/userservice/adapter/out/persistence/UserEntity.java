@@ -58,18 +58,4 @@ public class UserEntity {
 
     @Column(name = "is_active", nullable = false)
     private boolean isActive = true;
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        UserEntity that = (UserEntity) o;
-        return Objects.equals(id, that.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(id);
-    }
-
 }
