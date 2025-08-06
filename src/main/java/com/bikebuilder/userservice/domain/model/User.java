@@ -6,22 +6,24 @@ import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 @Getter
 @ToString(exclude = "password")
 @Builder(toBuilder = true)
 @AllArgsConstructor
-public final class User {
-    private final UUID id;
-    private final String email;
-    private final String password;
-    private final String name;
-    private final String lastName;
-    private final String phoneNumber;
-    private final Role role;
-    private final Instant created;
-    private final Instant updated;
-    private final boolean emailVerified;
-    private final boolean isActive;
+@NoArgsConstructor
+public class User {
+    private UUID id;
+    private String email;
+    private String password;
+    private String name;
+    private String lastName;
+    private String phoneNumber;
+    private Role role;
+    private Instant created;
+    private Instant updated;
+    private boolean emailVerified;
+    private boolean isActive;
 }
