@@ -1,6 +1,7 @@
 package com.bikebuilder.userservice.domain.model;
 
 import com.bikebuilder.userservice.application.port.in.command.UserCreateCommand;
+import com.bikebuilder.userservice.application.port.in.command.UserUpdateCommand;
 import com.bikebuilder.userservice.domain.enums.Role;
 import java.time.Instant;
 import java.util.UUID;
@@ -44,6 +45,30 @@ public class User {
             .role(Role.ADMIN)
             .created(Instant.now())
             .updated(null)
+            .emailVerified(false)
+            .isActive(true)
+            .build();
+    }
+
+    public static User update(UserUpdateCommand command) {
+
+        if (command.email() == null || !command.email().matches("^[\\w-.]+@([\\w-]+\\.)+[\\w-]{2,}$")) {
+            throw new IllegalArgumentException("Некорректный email");
+        }
+        if (command.password() == null || command.password().length() < 6) {
+            throw new IllegalArgumentException("Пароль должен быть не менее 6 символов");
+        }
+
+        return User.builder()
+            .id(command.id())
+            .email(command.email())
+            .password(command.password())
+            .name(command.name())
+            .lastName(command.lastName())
+            .phoneNumber(command.phoneNumber())
+            .role(Role.ADMIN)
+            .created(null)
+            .updated(Instant.now())
             .emailVerified(false)
             .isActive(true)
             .build();
