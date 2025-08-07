@@ -1,6 +1,7 @@
 package com.bikebuilder.userservice.adapter.out.persistence;
 
 import com.bikebuilder.userservice.adapter.in.GetUserFromIdUseCase;
+import com.bikebuilder.userservice.application.port.out.DeleteUserPort;
 import com.bikebuilder.userservice.application.port.out.GetUserFromIdPort;
 import com.bikebuilder.userservice.application.port.out.SaveUserPort;
 import com.bikebuilder.userservice.domain.model.User;
@@ -13,8 +14,8 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class UserPersistenceAdapter implements
     SaveUserPort,
-    GetUserFromIdPort
-{
+    GetUserFromIdPort,
+    DeleteUserPort {
 
     private final UserRepository userRepository;
 
@@ -29,7 +30,16 @@ public class UserPersistenceAdapter implements
     @Override
     public User getUser(UUID id) {
         UserEntity entity = userRepository.findById(id)
-            .orElseThrow(()-> new IllegalArgumentException ("Юзер не существует"));
-        return entity.toUser() ;
+            .orElseThrow(() -> new IllegalArgumentException("Юзер не существует"));
+        return entity.toUser();
+    }
+
+
+    @Override
+    public User deleteUser(UUID id) {
+        UserEntity entity = userRepository.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("Юзер не существует"));
+        userRepository.deleteById(id);
+        return entity.toUser();
     }
 }

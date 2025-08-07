@@ -13,7 +13,6 @@ public class GetUserFromIdUseCaseImpl implements GetUserFromIdUseCase {
 
     private final GetUserFromIdPort getUserFromIdPort;
 
-
     @Override
     public User getUser(UUID id) {
         return getUserFromIdPort.getUser(id);
