@@ -61,34 +61,34 @@ public class UserEntity {
 
     public User toUser() {
         return new User(
-                id,
-                email,
-                password,
-                name,
-                lastName,
-                phoneNumber,
-                role,
-                created,
-                updated,
-                emailVerified,
-                isActive
+            id,
+            email,
+            password,
+            name,
+            lastName,
+            phoneNumber,
+            role,
+            created,
+            updated,
+            emailVerified,
+            isActive
         );
     }
 
 
     public static UserEntity create(User user) {
         return new UserEntity(
-                null,
-                user.getEmail(),
-                user.getPassword(),
-                user.getName(),
-                user.getLastName(),
-                user.getPhoneNumber(),
-                user.getRole(),
-                user.getCreated() != null ? user.getCreated() : Instant.now(),
-                user.getUpdated(),
-                user.isEmailVerified(),
-                user.isActive()
+            null,
+            user.getEmail(),
+            user.getPassword(),
+            user.getName(),
+            user.getLastName(),
+            user.getPhoneNumber(),
+            user.getRole(),
+            user.getCreated() != null ? user.getCreated() : Instant.now(),
+            user.getUpdated(),
+            user.isEmailVerified(),
+            user.isActive()
         );
     }
 }

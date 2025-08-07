@@ -11,11 +11,10 @@ public class UserPersistenceAdapter implements SaveUserPort {
 
     private final UserRepository userRepository;
 
-
     @Override
     public User save(User user) {
         UserEntity entity = UserEntity.create(user);
-        UserEntity saved  = userRepository.save(entity);
+        UserEntity saved = userRepository.save(entity);
         return saved.toUser();
     }
 }

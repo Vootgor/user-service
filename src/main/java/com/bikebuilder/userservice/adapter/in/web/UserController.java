@@ -1,12 +1,12 @@
 package com.bikebuilder.userservice.adapter.in.web;
 
 import com.bikebuilder.userservice.adapter.in.CreateUserUseCase;
-import com.bikebuilder.userservice.adapter.in.web.dto.UserCreateRequestDto;
-import com.bikebuilder.userservice.adapter.in.web.dto.UserResponseDto;
+import com.bikebuilder.userservice.adapter.in.web.dto.UserCreateRequest;
+import com.bikebuilder.userservice.adapter.in.web.dto.UserResponse;
+import com.bikebuilder.userservice.application.port.in.command.UserCreateCommand;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,9 +22,9 @@ public class UserController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/")
-    public UserResponseDto createUser(@RequestBody @Valid UserCreateRequestDto requestDto ){
-
-        UserResponseDto response = createUserUseCase.createUser(requestDto);
-        return response;
+    public UserResponse createUser(@RequestBody @Valid UserCreateRequest request) {
+        var command = new UserCreateCommand(request.email(), request.password());
+        var response = createUserUseCase.createUser(command);
+        return UserResponse.fromUser(response);
     }
 }

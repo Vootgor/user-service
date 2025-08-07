@@ -1,9 +1,9 @@
 package com.bikebuilder.userservice.adapter.in;
 
-import com.bikebuilder.userservice.adapter.in.web.dto.UserCreateRequestDto;
-import com.bikebuilder.userservice.adapter.in.web.dto.UserResponseDto;
+import com.bikebuilder.userservice.application.port.in.command.UserCreateCommand;
+import com.bikebuilder.userservice.domain.model.User;
 
 public interface CreateUserUseCase {
 
-    UserResponseDto createUser(UserCreateRequestDto requestDto);
+    User createUser(UserCreateCommand command);
 }
