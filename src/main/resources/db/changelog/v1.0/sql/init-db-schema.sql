@@ -1,5 +1,3 @@
-CREATE TYPE Role AS ENUM('CUSTOMER', 'EMPLOYEE', 'ADMIN');
-
 CREATE TABLE users
 (
     id              UUID PRIMARY KEY,
@@ -8,7 +6,7 @@ CREATE TABLE users
     name            VARCHAR(100),
     last_name       VARCHAR(100),
     phone_number    VARCHAR(20),
-    role            Role        NOT NULL DEFAULT 'ADMIN',
+    role            TEXT        NOT NULL,
     created         TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated         TIMESTAMPTZ,
     email_verified  BOOLEAN     NOT NULL DEFAULT FALSE,

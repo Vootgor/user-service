@@ -1,6 +1,7 @@
 package com.bikebuilder.userservice.adapter.out.persistence;
 
 import com.bikebuilder.userservice.domain.enums.Role;
+import com.bikebuilder.userservice.domain.model.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -10,7 +11,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.time.Instant;
-import java.util.Objects;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -58,4 +58,37 @@ public class UserEntity {
 
     @Column(name = "is_active", nullable = false)
     private boolean isActive = true;
+
+    public User toUser() {
+        return new User(
+            id,
+            email,
+            password,
+            name,
+            lastName,
+            phoneNumber,
+            role,
+            created,
+            updated,
+            emailVerified,
+            isActive
+        );
+    }
+
+
+    public static UserEntity create(User user) {
+        return new UserEntity(
+            null,
+            user.getEmail(),
+            user.getPassword(),
+            user.getName(),
+            user.getLastName(),
+            user.getPhoneNumber(),
+            user.getRole(),
+            user.getCreated() != null ? user.getCreated() : Instant.now(),
+            user.getUpdated(),
+            user.isEmailVerified(),
+            user.isActive()
+        );
+    }
 }
