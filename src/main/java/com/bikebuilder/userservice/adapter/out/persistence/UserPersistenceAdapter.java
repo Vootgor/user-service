@@ -53,13 +53,12 @@ public class UserPersistenceAdapter implements
 
         existingEntity.setEmail(user.getEmail());
         existingEntity.setPassword(user.getPassword());
-        existingEntity.setName(user.getName());
-        existingEntity.setLastName(user.getLastName());
-        existingEntity.setPhoneNumber(user.getPhoneNumber());
+        if (user.getName() != null) existingEntity.setName(user.getName());
+        if (user.getLastName() != null) existingEntity.setLastName(user.getLastName());
+        if (user.getPhoneNumber() != null) existingEntity.setPhoneNumber(user.getPhoneNumber());
         existingEntity.setUpdated(user.getUpdated());
 
-        UserEntity saved = userRepository.save(existingEntity);
-
+        userRepository.save(existingEntity);
         return existingEntity.toUser();
     }
 }

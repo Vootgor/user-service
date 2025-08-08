@@ -57,10 +57,8 @@ public class UserController {
     public UserResponse updateUser(
         @PathVariable UUID id,
         @RequestBody @Valid UserUpdateRequest request) {
-
         var command = UserUpdateRequest.toCommand(id, request);
-        var user = updateUserUseCase.updateUser(command);
-        return UserResponse.fromUser(user);
+        return UserResponse.fromUser(updateUserUseCase.updateUser(command));
     }
 
 }
