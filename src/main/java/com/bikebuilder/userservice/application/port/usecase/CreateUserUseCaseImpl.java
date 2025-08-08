@@ -1,4 +1,4 @@
-package com.bikebuilder.userservice.application.port.service;
+package com.bikebuilder.userservice.application.port.usecase;
 
 import com.bikebuilder.userservice.adapter.in.CreateUserUseCase;
 import com.bikebuilder.userservice.application.port.in.command.UserCreateCommand;
@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class UserServiceImpl implements CreateUserUseCase {
+public class CreateUserUseCaseImpl implements CreateUserUseCase {
 
     private final SaveUserPort saveUserPort;
 
