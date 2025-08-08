@@ -1,13 +1,11 @@
 package com.bikebuilder.userservice.adapter.in.web.dto;
 
 import com.bikebuilder.userservice.application.port.in.command.UserUpdateCommand;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
 import java.util.UUID;
 
 public record UserUpdateRequest(
-    @Email @NotBlank String email,
-    @NotBlank String password,
+    String email,
+    String password,
     String name,
     String lastName,
     String phoneNumber
