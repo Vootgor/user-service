@@ -50,13 +50,7 @@ public class UserPersistenceAdapter implements
     public User update(User user) {
         UserEntity existingEntity = userRepository.findById(user.getId())
             .orElseThrow(() -> new IllegalArgumentException("Юзер не существует"));
-
-        if (user.getEmail() != null) existingEntity.setEmail(user.getEmail());
-        if (user.getPassword() != null) existingEntity.setPassword(user.getPassword());
-        if (user.getName() != null) existingEntity.setName(user.getName());
-        if (user.getLastName() != null) existingEntity.setLastName(user.getLastName());
-        if (user.getPhoneNumber() != null) existingEntity.setPhoneNumber(user.getPhoneNumber());
-        existingEntity.setUpdated(user.getUpdated());
+        existingEntity.updateFrom(user);
         userRepository.save(existingEntity);
         return existingEntity.toUser();
     }

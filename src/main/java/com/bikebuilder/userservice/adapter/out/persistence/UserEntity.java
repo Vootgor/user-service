@@ -91,4 +91,13 @@ public class UserEntity {
             user.isActive()
         );
     }
+
+    public void updateFrom(User user) {
+        if (user.getEmail() != null) this.setEmail(user.getEmail());
+        if (user.getPassword() != null) this.setPassword(user.getPassword());
+        if (user.getName() != null) this.setName(user.getName());
+        if (user.getLastName() != null) this.setLastName(user.getLastName());
+        if (user.getPhoneNumber() != null) this.setPhoneNumber(user.getPhoneNumber());
+        this.setUpdated(user.getUpdated());
+    }
 }
