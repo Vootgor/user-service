@@ -1,13 +1,10 @@
 package com.bikebuilder.userservice.adapter.out.persistence;
 
-import com.bikebuilder.userservice.adapter.in.GetUserFromIdUseCase;
-import com.bikebuilder.userservice.application.port.in.command.UserUpdateCommand;
 import com.bikebuilder.userservice.application.port.out.DeleteUserPort;
 import com.bikebuilder.userservice.application.port.out.GetUserFromIdPort;
 import com.bikebuilder.userservice.application.port.out.SaveUserPort;
 import com.bikebuilder.userservice.application.port.out.UpdateUserPort;
 import com.bikebuilder.userservice.domain.model.User;
-import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -50,7 +47,7 @@ public class UserPersistenceAdapter implements
     public User update(User user) {
         UserEntity existingEntity = userRepository.findById(user.getId())
             .orElseThrow(() -> new IllegalArgumentException("Юзер не существует"));
-        existingEntity.updateFrom(user);
+        existingEntity.update(user);
         userRepository.save(existingEntity);
         return existingEntity.toUser();
     }

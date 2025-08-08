@@ -92,7 +92,7 @@ public class UserEntity {
         );
     }
 
-    public void updateFrom(User user) {
+    public void update(User user) {
         if (user.getEmail() != null) this.setEmail(user.getEmail());
         if (user.getPassword() != null) this.setPassword(user.getPassword());
         if (user.getName() != null) this.setName(user.getName());
