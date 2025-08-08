@@ -29,10 +29,10 @@ public class User {
 
     public static User create(UserCreateCommand command) {
 
-        if (command.email() == null || !command.email().matches("^[\\w-.]+@([\\w-]+\\.)+[\\w-]{2,}$")) {
+        if (command.email() != null && !command.email().matches("^[\\w-.]+@([\\w-]+\\.)+[\\w-]{2,}$")) {
             throw new IllegalArgumentException("Некорректный email");
         }
-        if (command.password() == null || command.password().length() < 6) {
+        if (command.password() != null && command.password().length() < 6) {
             throw new IllegalArgumentException("Пароль должен быть не менее 6 символов");
         }
 
@@ -51,11 +51,10 @@ public class User {
     }
 
     public User update(UserUpdateCommand command) {
-        // todo добавить проверки с null
-        if (command.email() == null || !command.email().matches("^[\\w-.]+@([\\w-]+\\.)+[\\w-]{2,}$")) {
+        if (command.email() != null && !command.email().matches("^[\\w-.]+@([\\w-]+\\.)+[\\w-]{2,}$")) {
             throw new IllegalArgumentException("Некорректный email");
         }
-        if (command.password() == null || command.password().length() < 6) {
+        if (command.password() != null && command.password().length() < 6) {
             throw new IllegalArgumentException("Пароль должен быть не менее 6 символов");
         }
 

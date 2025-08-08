@@ -51,13 +51,12 @@ public class UserPersistenceAdapter implements
         UserEntity existingEntity = userRepository.findById(user.getId())
             .orElseThrow(() -> new IllegalArgumentException("Юзер не существует"));
 
-        existingEntity.setEmail(user.getEmail());
-        existingEntity.setPassword(user.getPassword());
+        if (user.getEmail() != null) existingEntity.setEmail(user.getEmail());
+        if (user.getPassword() != null) existingEntity.setPassword(user.getPassword());
         if (user.getName() != null) existingEntity.setName(user.getName());
         if (user.getLastName() != null) existingEntity.setLastName(user.getLastName());
         if (user.getPhoneNumber() != null) existingEntity.setPhoneNumber(user.getPhoneNumber());
         existingEntity.setUpdated(user.getUpdated());
-
         userRepository.save(existingEntity);
         return existingEntity.toUser();
     }
