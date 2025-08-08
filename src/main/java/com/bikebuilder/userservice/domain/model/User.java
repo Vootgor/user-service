@@ -3,16 +3,16 @@ package com.bikebuilder.userservice.domain.model;
 import com.bikebuilder.userservice.application.port.in.command.UserCreateCommand;
 import com.bikebuilder.userservice.application.port.in.command.UserUpdateCommand;
 import com.bikebuilder.userservice.domain.enums.Role;
+
 import java.time.Instant;
 import java.util.UUID;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.ToString;
+
+import lombok.*;
 
 @Getter
 @ToString(exclude = "password")
 @Builder
+@With
 @AllArgsConstructor
 public class User {
     private final UUID id;
@@ -37,21 +37,21 @@ public class User {
         }
 
         return User.builder()
-            .email(command.email())
-            .password(command.password())
-            .name(null)
-            .lastName(null)
-            .phoneNumber(null)
-            .role(Role.ADMIN)
-            .created(Instant.now())
-            .updated(null)
-            .emailVerified(false)
-            .isActive(true)
-            .build();
+                .email(command.email())
+                .password(command.password())
+                .name(null)
+                .lastName(null)
+                .phoneNumber(null)
+                .role(Role.ADMIN)
+                .created(Instant.now())
+                .updated(null)
+                .emailVerified(false)
+                .isActive(true)
+                .build();
     }
 
-    public static User update(UserUpdateCommand command) {
-
+    public User update(UserUpdateCommand command) {
+        // todo добавить проверки с null
         if (command.email() == null || !command.email().matches("^[\\w-.]+@([\\w-]+\\.)+[\\w-]{2,}$")) {
             throw new IllegalArgumentException("Некорректный email");
         }
@@ -59,18 +59,13 @@ public class User {
             throw new IllegalArgumentException("Пароль должен быть не менее 6 символов");
         }
 
-        return User.builder()
-            .id(command.id())
-            .email(command.email())
-            .password(command.password())
-            .name(command.name())
-            .lastName(command.lastName())
-            .phoneNumber(command.phoneNumber())
-            .role(Role.ADMIN)
-            .created(null)
-            .updated(Instant.now())
-            .emailVerified(false)
-            .isActive(true)
-            .build();
+        return this
+                .withEmail(command.email())
+                .withPassword(command.password())
+                .withName(command.name())
+                .withLastName(command.lastName())
+                .withPhoneNumber(command.phoneNumber())
+                .withUpdated(Instant.now())
+                ;
     }
 }
