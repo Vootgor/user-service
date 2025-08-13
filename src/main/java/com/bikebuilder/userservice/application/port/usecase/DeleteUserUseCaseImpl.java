@@ -7,6 +7,9 @@ import com.bikebuilder.userservice.domain.model.User;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 @Service
 @RequiredArgsConstructor
@@ -15,10 +18,16 @@ public class DeleteUserUseCaseImpl implements DeleteUserUseCase {
     private final DeleteUserPort deleteUserPort;
     private final UserEventPort userEventPort;
 
+    @Transactional
     @Override
     public User deleteUser(UUID id) {
         User deletedUser = deleteUserPort.deleteUser(id);
-        userEventPort.publishUserDeletedEvent(deletedUser.getId());
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                userEventPort.publishUserDeletedEvent(deletedUser.getId());
+            }
+        });
         return deletedUser;
     }
 }
