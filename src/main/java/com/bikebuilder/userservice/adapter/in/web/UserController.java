@@ -8,7 +8,6 @@ import com.bikebuilder.userservice.adapter.in.web.dto.UserCreateRequest;
 import com.bikebuilder.userservice.adapter.in.web.dto.UserResponse;
 import com.bikebuilder.userservice.adapter.in.web.dto.UserUpdateRequest;
 import com.bikebuilder.userservice.application.port.in.command.UserCreateCommand;
-import com.bikebuilder.userservice.application.port.in.command.UserUpdateCommand;
 import jakarta.validation.Valid;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
