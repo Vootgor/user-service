@@ -1,5 +1,7 @@
 package com.bikebuilder.userservice.adapter.out.persistence;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
@@ -47,19 +49,88 @@ public class UserPersistenceAdapterTest {
     }
 
     @Test
-    void shouldCallFindByIdAndSave_WhenUserExists() {
+    void save_shouldSaveUserSuccessfully() {
+        UserEntity entity = new UserEntity();
+        entity.setId(userId);
+        entity.setEmail("1@email.com");
+
+        when(userRepository.save(any())).thenReturn(entity);
+
+        User result = adapter.save(user);
+
+        verify(userRepository).save(any());
+        assertNotNull(result);
+        assertEquals(userId, result.getId());
+        assertEquals(user.getEmail(), result.getEmail());
+    }
+
+    @Test
+    void getUser_shouldGetUserSuccessfully() {
+        UserEntity entity = new UserEntity();
+        entity.setId(userId);
+        entity.setEmail("1@email.com");
+
+        when(userRepository.findById(userId)).thenReturn(Optional.of(entity));
+        User result = adapter.getUser(userId);
+
+        assertEquals(userId, result.getId());
+        assertEquals("1@email.com", result.getEmail());
+        verify(userRepository).findById(userId);
+    }
+
+    @Test
+    void getUser_shouldThrowIllegalArgumentException_whenUserNotFound() {
+        when(userRepository.findById(userId)).thenReturn(Optional.empty());
+
+        IllegalArgumentException exception = assertThrows(
+            IllegalArgumentException.class, () -> adapter.getUser(userId));
+
+        assertEquals("Юзер не существует", exception.getMessage());
+        verify(userRepository).findById(userId);
+    }
+
+    @Test
+    void deleteUser_shouldDeleteUserSuccessfully() {
+        UserEntity entity = new UserEntity();
+        entity.setId(userId);
+
+        when(userRepository.findById(userId)).thenReturn(Optional.of(entity));
+        User result = adapter.deleteUser(userId);
+
+        assertNotNull(result);
+        assertEquals(userId, result.getId());
+        verify(userRepository).deleteById(userId);
+    }
+
+    @Test
+    void deleteUser_shouldThrowIllegalArgumentException_whenUserNotFound() {
+        when(userRepository.findById(userId)).thenReturn(Optional.empty());
+
+        IllegalArgumentException exception = assertThrows(
+            IllegalArgumentException.class, () -> adapter.deleteUser(userId)
+        );
+        assertEquals("Юзер не существует", exception.getMessage());
+        verify(userRepository).findById(userId);
+        verify(userRepository, never()).deleteById(userId);
+    }
+
+
+    @Test
+    void update_shouldCallFindByIdAndSave_whenUserExists() {
         UserEntity existingEntity = new UserEntity();
         existingEntity.setId(userId);
 
         when(userRepository.findById(userId)).thenReturn(Optional.of(existingEntity));
 
-        adapter.update(user);
+        User result = adapter.update(user);
+
+        assertEquals(userId, result.getId());
         verify(userRepository).findById(userId);
         verify(userRepository).save(existingEntity);
     }
 
     @Test
-    void shouldThrowIllegalArgumentException_WhenUserDoesNotExist() {
+    void update_shouldThrowIllegalArgumentException_whenUserNotFound() {
         when(userRepository.findById(userId)).thenReturn(Optional.empty());
 
         assertThrows(IllegalArgumentException.class, () -> adapter.update(user));
