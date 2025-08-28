@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import org.apache.kafka.clients.consumer.Consumer;
@@ -95,6 +96,17 @@ class UserControllerIT {
         createdUser = objectMapper.readValue(response, UserResponse.class);
     }
 
+    private Map<String, Object> getKafkaProps(){
+        Map<String, Object> consumerProps = new HashMap<>();
+        consumerProps.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafka.getBootstrapServers());
+        consumerProps.put(ConsumerConfig.GROUP_ID_CONFIG, "test-group");
+        consumerProps.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+        consumerProps.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+        consumerProps.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+        consumerProps.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, false);
+        return consumerProps;
+    }
+
 
     @Test
     void createUser_happyPath() throws Exception {
@@ -147,16 +159,8 @@ class UserControllerIT {
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.email").value(createdUser.email()));
 
-        Map<String, Object> consumerProps = new HashMap<>();
-        consumerProps.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafka.getBootstrapServers());
-        consumerProps.put(ConsumerConfig.GROUP_ID_CONFIG, "test-group");
-        consumerProps.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-        consumerProps.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-        consumerProps.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
-        consumerProps.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, false);
-
-        try (Consumer<String, String> consumer = new KafkaConsumer<>(consumerProps)) {
-            consumer.subscribe(Collections.singletonList("user-deleted"));
+        try (Consumer<String, String> consumer = new KafkaConsumer<>(getKafkaProps())) {
+            consumer.subscribe(List.of("user-deleted"));
 
             ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(5));
             assertThat(records.count()).isGreaterThan(0);
