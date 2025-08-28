@@ -4,7 +4,17 @@ import com.bikebuilder.userservice.adapter.in.web.dto.UserCreateRequest;
 import com.bikebuilder.userservice.adapter.in.web.dto.UserResponse;
 import com.bikebuilder.userservice.adapter.in.web.dto.UserUpdateRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.time.Duration;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
+import org.apache.kafka.clients.consumer.Consumer;
+import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.clients.consumer.ConsumerRecords;
+import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.common.serialization.StringDeserializer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -22,6 +32,7 @@ import org.testcontainers.utility.DockerImageName;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -84,6 +95,7 @@ class UserControllerIT {
         createdUser = objectMapper.readValue(response, UserResponse.class);
     }
 
+
     @Test
     void createUser_happyPath() throws Exception {
         UserCreateRequest request = new UserCreateRequest(
@@ -99,6 +111,7 @@ class UserControllerIT {
             .andExpect(jsonPath("$.id").isNotEmpty());
     }
 
+
     @Test
     void getUser_happyPath() throws Exception {
         mockMvc.perform(get("/api/users/" + createdUser.id()))
@@ -106,6 +119,7 @@ class UserControllerIT {
             .andExpect(jsonPath("$.email").value(createdUser.email()))
             .andExpect(jsonPath("$.id").value(createdUser.id().toString()));
     }
+
 
     @Test
     void updateUser_happyPath() throws Exception {
@@ -126,11 +140,29 @@ class UserControllerIT {
             .andExpect(jsonPath("$.phoneNumber").value(updateRequest.phoneNumber()));
     }
 
+
     @Test
-    void deleteUser_happyPath() throws Exception {
+    void deleteUserWithKafka_happyPath() throws Exception {
         mockMvc.perform(delete("/api/users/" + createdUser.id()))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.email").value(createdUser.email()));
-    }
 
+        Map<String, Object> consumerProps = new HashMap<>();
+        consumerProps.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafka.getBootstrapServers());
+        consumerProps.put(ConsumerConfig.GROUP_ID_CONFIG, "test-group");
+        consumerProps.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+        consumerProps.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+        consumerProps.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+        consumerProps.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, false);
+
+        try (Consumer<String, String> consumer = new KafkaConsumer<>(consumerProps)) {
+            consumer.subscribe(Collections.singletonList("user-deleted"));
+
+            ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(5));
+            assertThat(records.count()).isGreaterThan(0);
+
+            ConsumerRecord<String, String> record = records.iterator().next();
+            assertThat(record.value()).contains(createdUser.id().toString());
+        }
+    }
 }
