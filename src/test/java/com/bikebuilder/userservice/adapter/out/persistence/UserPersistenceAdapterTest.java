@@ -8,6 +8,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.bikebuilder.bikebuilderexceptionstarter.UserNotFoundException;
 import com.bikebuilder.userservice.domain.enums.Role;
 import com.bikebuilder.userservice.domain.model.User;
 import java.time.Instant;
@@ -79,13 +80,13 @@ public class UserPersistenceAdapterTest {
     }
 
     @Test
-    void getUser_shouldThrowIllegalArgumentException_whenUserNotFound() {
+    void getUser_shouldThrowUserNotFoundException_whenUserNotFound() {
         when(userRepository.findById(userId)).thenReturn(Optional.empty());
 
-        IllegalArgumentException exception = assertThrows(
-            IllegalArgumentException.class, () -> adapter.getUser(userId));
+        UserNotFoundException exception = assertThrows(
+            UserNotFoundException.class, () -> adapter.getUser(userId));
 
-        assertEquals("Юзер не существует", exception.getMessage());
+        assertEquals("Пользователь не найден", exception.getMessage());
         verify(userRepository).findById(userId);
     }
 
@@ -103,13 +104,13 @@ public class UserPersistenceAdapterTest {
     }
 
     @Test
-    void deleteUser_shouldThrowIllegalArgumentException_whenUserNotFound() {
+    void deleteUser_shouldThrowUserNotFoundException_whenUserNotFound() {
         when(userRepository.findById(userId)).thenReturn(Optional.empty());
 
-        IllegalArgumentException exception = assertThrows(
-            IllegalArgumentException.class, () -> adapter.deleteUser(userId)
+        UserNotFoundException exception = assertThrows(
+            UserNotFoundException.class, () -> adapter.deleteUser(userId)
         );
-        assertEquals("Юзер не существует", exception.getMessage());
+        assertEquals("Пользователь не найден", exception.getMessage());
         verify(userRepository).findById(userId);
         verify(userRepository, never()).deleteById(userId);
     }
@@ -130,10 +131,10 @@ public class UserPersistenceAdapterTest {
     }
 
     @Test
-    void update_shouldThrowIllegalArgumentException_whenUserNotFound() {
+    void update_shouldThrowUserNotFoundException_whenUserNotFound() {
         when(userRepository.findById(userId)).thenReturn(Optional.empty());
 
-        assertThrows(IllegalArgumentException.class, () -> adapter.update(user));
+        assertThrows(UserNotFoundException.class, () -> adapter.update(user));
         verify(userRepository).findById(userId);
         verify(userRepository, never()).save(any());
     }

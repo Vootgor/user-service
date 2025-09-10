@@ -7,6 +7,8 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.bikebuilder.bikebuilderexceptionstarter.InvalidEmailException;
+import com.bikebuilder.bikebuilderexceptionstarter.InvalidPasswordException;
 import com.bikebuilder.userservice.application.port.in.command.UserCreateCommand;
 import com.bikebuilder.userservice.application.port.in.command.UserUpdateCommand;
 import com.bikebuilder.userservice.domain.enums.Role;
@@ -46,21 +48,21 @@ public class UserTest {
     }
 
     @Test
-    void shouldThrowIllegalArgumentException_WhenCreateWithInvalidEmail() {
+    void shouldThrowInvalidEmailException_WhenCreateWithInvalidEmail() {
         UserCreateCommand invalidCommand = new UserCreateCommand("email", "1234567");
 
-        IllegalArgumentException exception = assertThrows(
-            IllegalArgumentException.class, () -> User.create(invalidCommand)
+        InvalidEmailException exception = assertThrows(
+            InvalidEmailException.class, () -> User.create(invalidCommand)
         );
-        assertEquals("Некорректный email", exception.getMessage());
+        assertEquals("Введён не корректный email. Формат ввода - email@email.com", exception.getMessage());
     }
 
     @Test
-    void shouldThrowIllegalArgumentException_WhenCreateWithInvalidPassword() {
+    void shouldThrowInvalidPasswordException_WhenCreateWithInvalidPassword() {
         UserCreateCommand invalidCommand = new UserCreateCommand("1@email.com", "123");
 
-        IllegalArgumentException exception = assertThrows(
-            IllegalArgumentException.class, () -> User.create(invalidCommand)
+        InvalidPasswordException exception = assertThrows(
+            InvalidPasswordException.class, () -> User.create(invalidCommand)
         );
         assertEquals("Пароль должен быть не менее 6 символов", exception.getMessage());
     }
@@ -87,7 +89,7 @@ public class UserTest {
     }
 
     @Test
-    void shouldThrowIllegalArgumentException_WhenUpdateWithInvalidEmail() {
+    void shouldThrowInvalidEmailException_WhenUpdateWithInvalidEmail() {
         User user = User.create(createCommand);
         UserUpdateCommand invalidCommand = new UserUpdateCommand(
             UUID.randomUUID(),
@@ -98,14 +100,14 @@ public class UserTest {
             "8-800-2000-600"
         );
 
-        IllegalArgumentException exception = assertThrows(
-            IllegalArgumentException.class, () -> user.update(invalidCommand)
+        InvalidEmailException exception = assertThrows(
+            InvalidEmailException.class, () -> user.update(invalidCommand)
         );
-        assertEquals("Некорректный email", exception.getMessage());
+        assertEquals("Введён не корректный email. Формат ввода - email@email.com", exception.getMessage());
     }
 
     @Test
-    void shouldThrowIllegalArgumentException_WhenUpdateWithInvalidPassword() {
+    void shouldThrowInvalidPasswordException_WhenUpdateWithInvalidPassword() {
         User user = User.create(createCommand);
         UserUpdateCommand invalidCommand = new UserUpdateCommand(
             UUID.randomUUID(),
@@ -116,8 +118,8 @@ public class UserTest {
             "8-800-2000-600"
         );
 
-        IllegalArgumentException exception = assertThrows(
-            IllegalArgumentException.class, () -> user.update(invalidCommand)
+        InvalidPasswordException exception = assertThrows(
+            InvalidPasswordException.class, () -> user.update(invalidCommand)
         );
         assertEquals("Пароль должен быть не менее 6 символов", exception.getMessage());
     }
