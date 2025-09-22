@@ -18,7 +18,7 @@ jobs:
         uses: actions/checkout@v3
 
       # ------------------------
-      # 2. Настраиваем JDK 24
+      # 2. Настройка JDK 24
       # ------------------------
       - name: Set up JDK 24
         uses: actions/setup-java@v3
@@ -26,11 +26,28 @@ jobs:
           java-version: '24'
           distribution: 'temurin'
 
+      # ------------------------
+      # 3. Диагностика gradlew
+      # ------------------------
+      - name: Show current directory and files
+        run: |
+          pwd
+          ls -la
+
+      - name: Check gradlew permissions and first line
+        run: |
+          ls -la gradlew
+          head -n 1 gradlew
+
+      - name: Convert gradlew to Unix line endings
+        run: |
+          dos2unix gradlew || true
+
       - name: Make Gradle wrapper executable
         run: chmod +x gradlew
 
       # ------------------------
-      # 3. Сборка проекта и запуск тестов
+      # 4. Сборка и тесты
       # ------------------------
       - name: Build with Gradle
         run: ./gradlew build --no-daemon
