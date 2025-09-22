@@ -1,5 +1,6 @@
 package com.bikebuilder.userservice.adapter.out.persistence;
 
+import com.bikebuilder.bikebuilderexceptionstarter.UserNotFoundException;
 import com.bikebuilder.userservice.application.port.out.DeleteUserPort;
 import com.bikebuilder.userservice.application.port.out.GetUserFromIdPort;
 import com.bikebuilder.userservice.application.port.out.SaveUserPort;
@@ -30,7 +31,7 @@ public class UserPersistenceAdapter implements
     @Override
     public User getUser(UUID id) {
         UserEntity entity = userRepository.findById(id)
-            .orElseThrow(() -> new IllegalArgumentException("Юзер не существует"));
+            .orElseThrow(UserNotFoundException::new);
         return entity.toUser();
     }
 
@@ -38,7 +39,7 @@ public class UserPersistenceAdapter implements
     @Override
     public User deleteUser(UUID id) {
         UserEntity entity = userRepository.findById(id)
-            .orElseThrow(() -> new IllegalArgumentException("Юзер не существует"));
+            .orElseThrow(UserNotFoundException::new);
         userRepository.deleteById(id);
         return entity.toUser();
     }
@@ -46,7 +47,7 @@ public class UserPersistenceAdapter implements
     @Override
     public User update(User user) {
         UserEntity existingEntity = userRepository.findById(user.getId())
-            .orElseThrow(() -> new IllegalArgumentException("Юзер не существует"));
+            .orElseThrow(UserNotFoundException::new);
         existingEntity.update(user);
         userRepository.save(existingEntity);
         return existingEntity.toUser();

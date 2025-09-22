@@ -1,5 +1,8 @@
 package com.bikebuilder.userservice.domain.model;
 
+import com.bikebuilder.bikebuilderexceptionstarter.InvalidEmailException;
+import com.bikebuilder.bikebuilderexceptionstarter.InvalidPasswordException;
+import com.bikebuilder.bikebuilderexceptionstarter.UserNotFoundException;
 import com.bikebuilder.userservice.application.port.in.command.UserCreateCommand;
 import com.bikebuilder.userservice.application.port.in.command.UserUpdateCommand;
 import com.bikebuilder.userservice.domain.enums.Role;
@@ -30,10 +33,10 @@ public class User {
     public static User create(UserCreateCommand command) {
 
         if (command.email() == null || !command.email().matches("^[\\w-.]+@([\\w-]+\\.)+[\\w-]{2,}$")) {
-            throw new IllegalArgumentException("Некорректный email");
+            throw new InvalidEmailException();
         }
         if (command.password() == null || command.password().length() < 6) {
-            throw new IllegalArgumentException("Пароль должен быть не менее 6 символов");
+            throw new InvalidPasswordException();
         }
 
         return User.builder()
@@ -52,10 +55,10 @@ public class User {
 
     public User update(UserUpdateCommand command) {
         if (command.email() != null && !command.email().matches("^[\\w-.]+@([\\w-]+\\.)+[\\w-]{2,}$")) {
-            throw new IllegalArgumentException("Некорректный email");
+            throw new InvalidEmailException();
         }
         if (command.password() != null && command.password().length() < 6) {
-            throw new IllegalArgumentException("Пароль должен быть не менее 6 символов");
+            throw new InvalidPasswordException();
         }
 
         return this

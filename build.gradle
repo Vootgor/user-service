@@ -21,6 +21,7 @@ configurations {
 
 repositories {
     mavenCentral()
+    mavenLocal()
 }
 
 dependencies {
@@ -28,6 +29,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.liquibase:liquibase-core'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation "com.bikebuilder:bikebuilder-exception-starter:0.0.1-SNAPSHOT"
 
     implementation 'org.springframework.kafka:spring-kafka'
 
