@@ -26,6 +26,9 @@ jobs:
           java-version: '24'
           distribution: 'temurin'
 
+      - name: Make Gradle wrapper executable
+        run: chmod +x gradlew
+
       # ------------------------
       # 3. Сборка проекта и запуск тестов
       # ------------------------
