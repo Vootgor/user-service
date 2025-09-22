@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # ------------------------
+      # 1. Клонируем репозиторий
+      # ------------------------
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # ------------------------
+      # 2. Настраиваем JDK 24
+      # ------------------------
+      - name: Set up JDK 24
+        uses: actions/setup-java@v3
+        with:
+          java-version: '24'
+          distribution: 'temurin'
+
+      # ------------------------
+      # 3. Сборка проекта и запуск тестов
+      # ------------------------
+      - name: Build with Gradle
+        run: ./gradlew build --no-daemon
+
+      - name: Run tests
+        run: ./gradlew test --no-daemon
