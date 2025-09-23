@@ -22,6 +22,14 @@ configurations {
 repositories {
     mavenCentral()
     mavenLocal()
+    maven {
+        name = "GitHubPackages"
+        url = uri("https://maven.pkg.github.com/Vootgor/bikebuilder-exception-starter")
+        credentials {
+            username = project.findProperty("gpr.user") ?: System.getenv("GITHUB_ACTOR")
+            password = project.findProperty("gpr.token") ?: System.getenv("GH_PACKAGES_TOKEN")
+        }
+    }
 }
 
 dependencies {
