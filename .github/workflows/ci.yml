@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [ master ]
+    branches: [ master ] # <-- твоя ветка, не трогаем
   pull_request:
     branches: [ master ]
 
@@ -27,21 +27,12 @@ jobs:
           distribution: 'temurin'
 
       # ------------------------
-      # 3. Диагностика gradlew
+      # 3. Проверка и подготовка gradlew
       # ------------------------
-      - name: Show current directory and files
-        run: |
-          pwd
-          ls -la
-
-      - name: Check gradlew permissions and first line
+      - name: Show gradlew info
         run: |
           ls -la gradlew
           head -n 1 gradlew
-
-      - name: Convert gradlew to Unix line endings
-        run: |
-          dos2unix gradlew || true
 
       - name: Make Gradle wrapper executable
         run: chmod +x gradlew
@@ -49,8 +40,5 @@ jobs:
       # ------------------------
       # 4. Сборка и тесты
       # ------------------------
-      - name: Build with Gradle
+      - name: Build and run tests
         run: ./gradlew build --no-daemon
-
-      - name: Run tests
-        run: ./gradlew test --no-daemon
