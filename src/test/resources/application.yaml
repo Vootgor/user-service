@@ -1,11 +1,1 @@
-spring:
-  application:
-    name: user-service
-  liquibase:
-    change-log: classpath:db/changelog/changelog-master.yaml
-  jpa:
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
-    show-sql: true
-    hibernate:
-      format_sql: true
-      ddl-auto: none
+
