@@ -4,4 +4,4 @@ spring:
   liquibase:
     change-log: classpath:db/changelog/changelog-master.yaml
   kafka:
-    bootstrap-servers: localhost:9093
+    bootstrap-servers: mock
