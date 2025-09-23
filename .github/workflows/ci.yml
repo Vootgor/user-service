@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [ master ] # <-- твоя ветка, не трогаем
+    branches: [ master ] # <-- твоя ветка
   pull_request:
     branches: [ master ]
 
@@ -38,7 +38,9 @@ jobs:
         run: chmod +x gradlew
 
       # ------------------------
-      # 4. Сборка и тесты
+      # 4. Сборка и тесты с GitHub Packages
       # ------------------------
-      - name: Build and run tests
+      - name: Build and test
         run: ./gradlew build --no-daemon
+        env:
+          GH_PACKAGES_TOKEN: ${{ secrets.GH_PACKAGES_TOKEN }}
