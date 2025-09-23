@@ -22,6 +22,14 @@ configurations {
 repositories {
     mavenCentral()
     mavenLocal()
+    maven {
+        name = "GitHubPackages"
+        url = uri("https://maven.pkg.github.com/Vootgor/bikebuilder-exception-starter")
+        credentials {
+            username = project.findProperty("gpr.user") ?: System.getenv("GITHUB_ACTOR")
+            password = project.findProperty("gpr.token") ?: System.getenv("GH_PACKAGES_TOKEN")
+        }
+    }
 }
 
 dependencies {
@@ -29,6 +37,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.liquibase:liquibase-core'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-testcontainers'
     implementation "com.bikebuilder:bikebuilder-exception-starter:0.0.1-SNAPSHOT"
 
     implementation 'org.springframework.kafka:spring-kafka'
