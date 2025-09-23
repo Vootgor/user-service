@@ -10,11 +10,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    env:
-      # Эти переменные помогают Testcontainers работать в GitHub Actions
-      TESTCONTAINERS_RYUK_DISABLED: 'true'
-      DOCKER_HOST: unix:///var/run/docker.sock
-
     steps:
       # ------------------------
       # 1. Клонируем репозиторий
