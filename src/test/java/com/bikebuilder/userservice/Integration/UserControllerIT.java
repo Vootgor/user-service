@@ -5,8 +5,6 @@ import com.bikebuilder.userservice.adapter.in.web.dto.UserResponse;
 import com.bikebuilder.userservice.adapter.in.web.dto.UserUpdateRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.Duration;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -23,15 +21,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.kafka.test.EmbeddedKafkaBroker;
+import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.test.web.servlet.MockMvc;
 
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.kafka.KafkaContainer;
-import org.testcontainers.utility.DockerImageName;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -44,38 +38,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Testcontainers
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
+@EmbeddedKafka(partitions = 1, topics = {"user-deleted"})
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class UserControllerIT {
 
-    @Container
-    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16")
-        .withDatabaseName("testdb")
-        .withUsername("test")
-        .withPassword("test");
-
-    @Container
-    static KafkaContainer kafka = new KafkaContainer(
-        DockerImageName.parse("apache/kafka:3.7.0")
-            .asCompatibleSubstituteFor("confluentinc/cp-kafka")
-    );
-
-    static {
-        postgres.start();
-        kafka.start();
-    }
-
-    @DynamicPropertySource
-    static void configureProperties(DynamicPropertyRegistry registry) {
-        System.out.println("KDJHSFKJSDHFKJ " + postgres.getJdbcUrl());
-        registry.add("spring.datasource.url", postgres::getJdbcUrl);
-        registry.add("spring.datasource.username", postgres::getUsername);
-        registry.add("spring.datasource.password", postgres::getPassword);
-        registry.add("spring.datasource.driver-class-name", () -> "org.postgresql.Driver");
-        registry.add("spring.kafka.bootstrap-servers", kafka::getBootstrapServers);
-    }
-
     @Autowired
     private MockMvc mockMvc;
+
+    @Autowired
+    private EmbeddedKafkaBroker embeddedKafka;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -84,7 +55,7 @@ class UserControllerIT {
 
     @BeforeEach
     void setUp() throws Exception {
-        String uniqueEmail = "user" + UUID.randomUUID().toString() + "@gmail.com";
+        String uniqueEmail = "user" + UUID.randomUUID() + "@gmail.com";
         UserCreateRequest request = new UserCreateRequest(uniqueEmail, "password");
 
         String response = mockMvc.perform(post("/api/users/")
@@ -97,15 +68,14 @@ class UserControllerIT {
         createdUser = objectMapper.readValue(response, UserResponse.class);
     }
 
-    private Map<String, Object> getKafkaProps(){
-        Map<String, Object> consumerProps = new HashMap<>();
-        consumerProps.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafka.getBootstrapServers());
-        consumerProps.put(ConsumerConfig.GROUP_ID_CONFIG, "test-group");
-        consumerProps.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-        consumerProps.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-        consumerProps.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
-        consumerProps.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, false);
-        return consumerProps;
+    private Map<String, Object> getKafkaProps() {
+        return Map.of(
+                ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, embeddedKafka.getBrokersAsString(),
+                ConsumerConfig.GROUP_ID_CONFIG, "test-group",
+                ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest",
+                ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class,
+                ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class
+        );
     }
 
 

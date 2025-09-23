@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: user-service
+  liquibase:
+    change-log: classpath:db/changelog/changelog-master.yaml
+  kafka:
+    bootstrap-servers: localhost:9093
