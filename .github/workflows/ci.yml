@@ -46,6 +46,12 @@ jobs:
       # 4. Сборка и тесты с GitHub Packages
       # ------------------------
       - name: Build and test
-        run: ./gradlew build --no-daemon
+        run: ./gradlew clean build --no-daemon
         env:
           GH_PACKAGES_TOKEN: ${{ secrets.GH_PACKAGES_TOKEN }}
+
+      - name: Upload test report
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-report
+          path: build/reports/tests/test
